@@ -25,6 +25,8 @@ void ABirbCharacter::BeginPlay()
 	TObjectPtr<AJumpBirbGameMode> GameMode = Cast<AJumpBirbGameMode>(GetWorld()->GetAuthGameMode());
 	GameMode->OnGameStateChange.AddDynamic(this, &ABirbCharacter::OnGameStateChange);
 
+	DisableInput(GetWorld()->GetFirstPlayerController());
+
 	//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -52,6 +54,7 @@ void ABirbCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	}
 }
 
+// Jump
 void ABirbCharacter::JumpBirb()
 {
 	// First jump, enable gravity and start game
@@ -70,6 +73,7 @@ void ABirbCharacter::JumpBirb()
 	
 	GetCapsuleComponent()->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false);
 	GetCapsuleComponent()->AddImpulse(FVector(0.0f, 0.0f, JumpForce));
+	GetCapsuleComponent()->AddImpulse(FVector(0.0f, 0.0f, -10));
 }
 
 void ABirbCharacter::OnGameStateChange(EGameState GameState)
@@ -81,6 +85,7 @@ void ABirbCharacter::OnGameStateChange(EGameState GameState)
 		break;
 		
 	case EGameState::Setup :
+		EnableInput(GetWorld()->GetFirstPlayerController());
 		ResetPlayer();
 		break;
 
@@ -88,10 +93,12 @@ void ABirbCharacter::OnGameStateChange(EGameState GameState)
 		break;
 
 	case EGameState::GameOver :
+		DisableInput(GetWorld()->GetFirstPlayerController());
 		break;
 	}
 }
 
+// Reset
 void ABirbCharacter::ResetPlayer()
 {
 	GetCapsuleComponent()->SetEnableGravity(false);

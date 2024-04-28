@@ -23,7 +23,9 @@ class JUMPBIRB_API AJumpBirbGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+	FTimerHandle SpawnObstaclesTimer;
 	FVector ObstacleSpawnLocation;
+	float ObstacleSpawnRate = 3.0f;
 
 	bool bGameOver = false;
 	
@@ -39,7 +41,8 @@ class JUMPBIRB_API AJumpBirbGameMode : public AGameModeBase
 	UPROPERTY(EditAnywhere, Category = "Sounds")
 	TObjectPtr<USoundBase> CollisionSound;
 
-	FTimerHandle SpawnObstaclesTimer;
+	UPROPERTY(EditAnywhere, Category = "Sounds")
+	TObjectPtr<USoundBase> Music;
 
 protected:
 	// Called when the game starts or when spawned
@@ -73,4 +76,7 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int HighScore = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bNewHighScore = false;
 };

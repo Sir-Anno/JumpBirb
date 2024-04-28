@@ -14,6 +14,11 @@ void AJumpBirbGameMode::BeginPlay()
 		0.0f
 	);
 
+	if (Music)
+	{
+		UGameplayStatics::PlaySound2D(this, Music);
+	}
+
 	SwitchGameState(EGameState::Menu);
 }
 
@@ -26,8 +31,7 @@ void AJumpBirbGameMode::Setup()
 // When the player starts jumping
 void AJumpBirbGameMode::StartGame()
 {
-	SpawnObstacle();
-	GetWorldTimerManager().SetTimer(SpawnObstaclesTimer, this, &AJumpBirbGameMode::SpawnObstacle, 5.0f, true);
+	GetWorldTimerManager().SetTimer(SpawnObstaclesTimer, this, &AJumpBirbGameMode::SpawnObstacle, ObstacleSpawnRate, true, 0);
 }
 
 // When the player collides with a wall
@@ -48,7 +52,9 @@ void AJumpBirbGameMode::GameOver()
 void AJumpBirbGameMode::ResetGame()
 {
 	bGameOver = false;
+	bNewHighScore = false;
 	Score = 0;
+	OnScoreChanged.Broadcast(Score); // Reset UI
 
 	// Clear all obstacles
 	TArray<TObjectPtr<AActor>> Obstacles;
@@ -73,6 +79,12 @@ void AJumpBirbGameMode::UpdateScore()
 	Score ++;
 	OnScoreChanged.Broadcast(Score); // Alerts UI to update
 
+	if (Score > HighScore)
+	{
+		HighScore = Score;
+		bNewHighScore = true;
+	}
+
 	if (ScoreSound)
 	{
 		UGameplayStatics::PlaySound2D(this, ScoreSound);
@@ -91,7 +103,6 @@ void AJumpBirbGameMode::SwitchGameState(EGameState NewState)
 	if(NewState == CurrentGameState) return;
 
 	CurrentGameState = NewState;
-	OnGameStateChange.Broadcast(CurrentGameState);
 	
 	switch (CurrentGameState)
 	{
@@ -111,4 +122,6 @@ void AJumpBirbGameMode::SwitchGameState(EGameState NewState)
 		GameOver();
 		break;
 	}
+
+	OnGameStateChange.Broadcast(CurrentGameState);
 }
