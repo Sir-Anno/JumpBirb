@@ -6,6 +6,7 @@
 #include "JumpBirbGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -41,6 +42,16 @@ void ABirbCharacter::BeginPlay()
 void ABirbCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Rotates actor up when jumping and down when falling
+	const FVector2D InRange = FVector2d(-1, 1);
+	const FVector2D OutRange = FVector2d(0, 1);
+	const FRotator UpRotation = FRotator(-20.0f, 0.0f, 0.0f);
+	const FRotator DownRotation = FRotator(20.0f, 0.0f, 0.0f);
+	const float Velocity = GetCapsuleComponent()->GetPhysicsLinearVelocity().Z;
+	const float Alpha = FMath::GetMappedRangeValueClamped(InRange, OutRange, Velocity);
+	const FRotator NewRotation = UKismetMathLibrary::RLerp(DownRotation, UpRotation, Alpha, false);
+	SetActorRotation(NewRotation);
 }
 
 // Called to bind functionality to input
@@ -62,7 +73,7 @@ void ABirbCharacter::JumpBirb()
 	{
 		GetCapsuleComponent()->SetEnableGravity(true);
 
-		AJumpBirbGameMode* GameMode = Cast< AJumpBirbGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+		AJumpBirbGameMode* GameMode = Cast<AJumpBirbGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 		GameMode->SwitchGameState(EGameState::StartGame);
 	}
 
@@ -93,15 +104,21 @@ void ABirbCharacter::OnGameStateChange(EGameState GameState)
 		break;
 
 	case EGameState::GameOver :
-		DisableInput(GetWorld()->GetFirstPlayerController());
+		OnGameOver();
 		break;
 	}
+}
+
+void ABirbCharacter::OnGameOver()
+{
+	DisableInput(GetWorld()->GetFirstPlayerController());
+	GetCapsuleComponent()->SetEnableGravity(false);
+	GetCapsuleComponent()->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false);
 }
 
 // Reset
 void ABirbCharacter::ResetPlayer()
 {
-	GetCapsuleComponent()->SetEnableGravity(false);
 	SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
 }
 

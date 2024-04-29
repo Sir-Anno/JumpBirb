@@ -22,6 +22,8 @@ UCLASS()
 class JUMPBIRB_API AJumpBirbGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+	
+	AJumpBirbGameMode();
 
 	FTimerHandle SpawnObstaclesTimer;
 	FVector ObstacleSpawnLocation;
@@ -47,6 +49,10 @@ class JUMPBIRB_API AJumpBirbGameMode : public AGameModeBase
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void CreateSaveFile();
+	void SaveGame();
+	void LoadGame();
 
 	void Setup();
 	void StartGame();

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "JumpBirbGameMode.h"
 #include "PaperCharacter.h"
+#include "Components/TimelineComponent.h"
 #include "BirbCharacter.generated.h"
 
 class UCameraComponent;
@@ -51,6 +52,8 @@ protected:
 
 	UFUNCTION()
 	void OnGameStateChange(EGameState GameState);
+
+	void OnGameOver();
 
 	void ResetPlayer();
 };

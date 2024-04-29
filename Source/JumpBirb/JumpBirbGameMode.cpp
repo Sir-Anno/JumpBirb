@@ -2,7 +2,13 @@
 
 #include "JumpBirbGameMode.h"
 #include "Obstacle.h"
+#include "SaveSystem.h"
 #include "Kismet/GameplayStatics.h"
+
+AJumpBirbGameMode::AJumpBirbGameMode()
+{
+	LoadGame();
+}
 
 void AJumpBirbGameMode::BeginPlay()
 {
@@ -20,6 +26,38 @@ void AJumpBirbGameMode::BeginPlay()
 	}
 
 	SwitchGameState(EGameState::Menu);
+}
+
+// Create / Save / Load game
+void AJumpBirbGameMode::CreateSaveFile()
+{
+	TObjectPtr<USaveSystem> SaveData = Cast<USaveSystem>(UGameplayStatics::CreateSaveGameObject(USaveSystem::StaticClass()));
+	UGameplayStatics::SaveGameToSlot(SaveData, "Slot1", 0);
+}
+
+void AJumpBirbGameMode::SaveGame()
+{
+	TObjectPtr<USaveSystem> SaveData = Cast<USaveSystem>(UGameplayStatics::LoadGameFromSlot("Slot1", 0));
+
+	if (SaveData)
+	{
+		SaveData->HighScore = HighScore;
+		UGameplayStatics::SaveGameToSlot(SaveData, "Slot1", 0);
+	}
+	else if (!UGameplayStatics::DoesSaveGameExist("Slot1", 0))
+	{
+		CreateSaveFile();
+	}
+}
+
+void AJumpBirbGameMode::LoadGame()
+{
+	TObjectPtr<USaveSystem> SaveData = Cast<USaveSystem>(UGameplayStatics::LoadGameFromSlot("Slot1", 0));
+
+	if (SaveData)
+	{
+		HighScore = SaveData->HighScore;
+	}
 }
 
 // Used for setting up the game, showing main menu
@@ -46,6 +84,8 @@ void AJumpBirbGameMode::GameOver()
 	{
 		UGameplayStatics::PlaySound2D(this, CollisionSound);
 	}
+
+	SaveGame();
 }
 
 // Reset everything
