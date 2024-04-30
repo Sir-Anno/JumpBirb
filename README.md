@@ -1,7 +1,7 @@
 
 # JumpBirb - A flappy bird clone
 
-This is a simple flappybird clone I made as practice for learning C++.
+This is a simple flappybird clone I made as practice for learning C++.  
 Plays like the original but a little easier I think :)
 
 ## Download  here
