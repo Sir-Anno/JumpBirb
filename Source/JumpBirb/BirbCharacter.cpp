@@ -87,6 +87,7 @@ void ABirbCharacter::JumpBirb()
 	GetCapsuleComponent()->AddImpulse(FVector(0.0f, 0.0f, -10));
 }
 
+// On game state switch
 void ABirbCharacter::OnGameStateChange(EGameState GameState)
 {
 	switch (GameState)
@@ -109,16 +110,19 @@ void ABirbCharacter::OnGameStateChange(EGameState GameState)
 	}
 }
 
+// Game over
 void ABirbCharacter::OnGameOver()
 {
 	DisableInput(GetWorld()->GetFirstPlayerController());
-	GetCapsuleComponent()->SetEnableGravity(false);
-	GetCapsuleComponent()->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f), false);
+	// Allows actor to fall through world, using NoCollision causes actor to ping down super fast but not first time player collides with something?
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly); 
 }
 
 // Reset
 void ABirbCharacter::ResetPlayer()
 {
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetEnableGravity(false);
 	SetActorLocation(FVector(0.0f, 0.0f, 0.0f));
 }
 
