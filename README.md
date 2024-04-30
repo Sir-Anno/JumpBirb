@@ -9,6 +9,6 @@ https://siranno.itch.io/jumpbirb
 
 ## Screenshots
 
-![Title screen](/Screenshots/Title)
-![Game screen](/Screenshots/Game)
-![Score screen](/Screenshots/Score)
+![Title screen](/Screenshots/Title.png)
+![Game screen](/Screenshots/Game.png)
+![Score screen](/Screenshots/Score.png)
